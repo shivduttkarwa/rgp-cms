@@ -45,7 +45,7 @@ export default function HomePage({ ready = false }: { ready?: boolean }) {
     });
     const cleanup = initGsapSwitchAnimations(pageRef.current);
     return cleanup;
-  }, []);
+  }, [location.key, page]);
 
   // ── Hero ─────────────────────────────────────────────────────────
   const titleLine1 = hero

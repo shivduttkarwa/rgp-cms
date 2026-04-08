@@ -106,7 +106,7 @@ const PropertyListingSection = ({
 
     gsap.set(cards, { clipPath: "inset(100% 0 0 0)", willChange: "clip-path" });
 
-    ScrollTrigger.create({
+    const trigger = ScrollTrigger.create({
       trigger: gridRef.current,
       start: "top 85%",
       once: true,
@@ -122,7 +122,14 @@ const PropertyListingSection = ({
         });
       },
     });
-  }, []);
+
+    ScrollTrigger.refresh();
+
+    return () => {
+      trigger.kill();
+      gsap.set(cards, { clearProps: "will-change,clip-path" });
+    };
+  }, [displayedFilter, allProperties.length]);
 
   const displayed =
     displayedFilter === "*"
