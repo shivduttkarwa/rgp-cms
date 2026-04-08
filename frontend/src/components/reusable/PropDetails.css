@@ -32,9 +32,9 @@
    ════════════════════════════════════════════════════════ */
 .pd-hero {
   position: relative;
-  height: 100vh;
-  min-height: 700px;
-  max-height: 900px;
+  height: 100dvh;
+  min-height: 100dvh;
+  max-height: 100dvh;
   overflow: hidden;
 }
 
@@ -1409,10 +1409,6 @@
 }
 
 @media (max-width: 768px) {
-  .pd-hero {
-    min-height: 600px;
-  }
-
   .pd-hero__content {
     padding: 0 1.5rem;
     bottom: 15%;

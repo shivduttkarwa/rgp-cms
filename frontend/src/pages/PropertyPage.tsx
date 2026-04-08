@@ -3,6 +3,7 @@ import { useParams, Navigate } from "react-router-dom";
 import PropDetail from "../components/reusable/PropDetails";
 import type { PropertyData } from "../components/reusable/PropDetails";
 import { fetchListingDetailBySlug } from "../hooks/useListings";
+import "./PageShell.css";
 
 export default function PropertyPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -28,7 +29,16 @@ export default function PropertyPage() {
     };
   }, [slug]);
 
-  if (property === undefined) return null;
+  if (property === undefined) {
+    return (
+      <section className="page-shell page-shell--compact" aria-busy="true">
+        <div className="page-shell__inner">
+          <div className="page-shell__spinner" aria-hidden="true" />
+          <p className="page-shell__sub">Loading property details...</p>
+        </div>
+      </section>
+    );
+  }
 
   if (!property) return <Navigate to="/" replace />;
 

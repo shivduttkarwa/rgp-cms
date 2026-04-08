@@ -3,6 +3,7 @@ import "./Preloader.css";
 
 interface PreloaderProps {
   onComplete?: () => void;
+  persistent?: boolean;
 }
 
 const parseDurationMs = (value: string, fallback: number) => {
@@ -20,7 +21,7 @@ const parseDurationMs = (value: string, fallback: number) => {
   return Number.isFinite(parsed) ? parsed : fallback;
 };
 
-export default function Preloader({ onComplete }: PreloaderProps) {
+export default function Preloader({ onComplete, persistent = false }: PreloaderProps) {
   const preloaderRef = useRef<HTMLDivElement>(null);
   const strokeRef = useRef<SVGPathElement>(null);
   const onCompleteRef = useRef(onComplete);
@@ -49,6 +50,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
   }, []);
 
   useEffect(() => {
+    if (persistent) return;
     const el = preloaderRef.current;
     if (!el) return;
 
@@ -83,7 +85,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
       clearTimeout(hideTimer);
       clearTimeout(removeTimer);
     };
-  }, []);
+  }, [persistent]);
 
   if (hidden) return null;
 
