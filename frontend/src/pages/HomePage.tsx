@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import HeroSection from "../sections/HeroSection";
 import HeroSearchPanel from "../components/HeroSearchPanel";
 import Intro from "../sections/Intro";
@@ -25,7 +25,6 @@ function withHighlight(text: string, highlight: string, cls: string) {
 
 export default function HomePage({ ready = false }: { ready?: boolean }) {
   const pageRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
   const location = useLocation();
   const hero = useHomepageHero();
 
@@ -74,11 +73,19 @@ export default function HomePage({ ready = false }: { ready?: boolean }) {
         titleLine1={titleLine1}
         titleLine2={titleLine2}
         subtitle={hero?.hero_subtitle}
-        ctaLabel={hero?.hero_cta_label}
-        ctaOnClick={() => navigate("/properties")}
+        showCta={false}
         bgImage={bgImage}
         bgVideo={bgVideo}
-        panel={<HeroSearchPanel />}
+        panel={
+          <HeroSearchPanel
+            btns={hero ? [
+              { label: hero.hero_btn1_label, url: hero.hero_btn1_url },
+              { label: hero.hero_btn2_label, url: hero.hero_btn2_url },
+              { label: hero.hero_btn3_label, url: hero.hero_btn3_url },
+              { label: hero.hero_btn4_label, url: hero.hero_btn4_url },
+            ] : undefined}
+          />
+        }
       />
 
       <Intro />

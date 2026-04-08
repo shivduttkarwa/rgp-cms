@@ -2,21 +2,31 @@ import { useNavigate } from "react-router-dom";
 import { Home, KeyRound, BadgeCheck, UserSearch } from "lucide-react";
 import "./HeroSearchPanel.css";
 
-const TABS = [
-  { id: "buy",   label: "Buy",   icon: Home,       href: "/properties?cat=for-sale" },
-  { id: "rent",  label: "Rent",  icon: KeyRound,   href: "/properties?cat=for-rent" },
-  { id: "sold",  label: "Sold",  icon: BadgeCheck, href: "/properties?cat=sold"     },
-  { id: "agent", label: "Agent", icon: UserSearch, href: "/team"                    },
+const ICONS = [Home, KeyRound, BadgeCheck, UserSearch];
+
+const DEFAULTS = [
+  { label: "Buy",   href: "/properties?cat=for-sale" },
+  { label: "Rent",  href: "/properties?cat=for-rent" },
+  { label: "Sold",  href: "/properties?cat=sold"     },
+  { label: "Agent", href: "/team"                    },
 ];
 
-export default function HeroSearchPanel() {
+interface Props {
+  btns?: { label: string; url: string }[];
+}
+
+export default function HeroSearchPanel({ btns }: Props) {
   const navigate = useNavigate();
+
+  const tabs = btns && btns.length === 4
+    ? btns.map((b, i) => ({ label: b.label, href: b.url, icon: ICONS[i] }))
+    : DEFAULTS.map((d, i) => ({ ...d, icon: ICONS[i] }));
 
   return (
     <div className="hsp">
-      {TABS.map(({ id, label, icon: Icon, href }) => (
+      {tabs.map(({ label, href, icon: Icon }) => (
         <button
-          key={id}
+          key={label}
           className="hsp__tab"
           onClick={() => navigate(href)}
           type="button"

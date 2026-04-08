@@ -35,7 +35,6 @@ class HomePage(Page):
             "& exclusive estates crafted for those who demand the extraordinary."
         ),
     )
-    hero_cta_label = models.CharField(max_length=50, default="Explore Properties")
     hero_bg_image = models.ForeignKey(
         "wagtailimages.Image",
         null=True,
@@ -51,27 +50,41 @@ class HomePage(Page):
         help_text="Path relative to public/ folder, or a full https:// URL",
     )
 
+    # ── Hero panel buttons (Buy / Rent / Sold / Agent) ───────────
+    hero_btn1_label = models.CharField(max_length=30, default="Buy")
+    hero_btn1_url   = models.CharField(max_length=255, default="/properties?cat=for-sale")
+    hero_btn2_label = models.CharField(max_length=30, default="Rent")
+    hero_btn2_url   = models.CharField(max_length=255, default="/properties?cat=for-rent")
+    hero_btn3_label = models.CharField(max_length=30, default="Sold")
+    hero_btn3_url   = models.CharField(max_length=255, default="/properties?cat=sold")
+    hero_btn4_label = models.CharField(max_length=30, default="Agent")
+    hero_btn4_url   = models.CharField(max_length=255, default="/team")
+
     content_panels = Page.content_panels + [
         MultiFieldPanel(
             [
-                FieldRowPanel(
-                    [
-                        FieldPanel("hero_title_line1"),
-                        FieldPanel("hero_title_line1_highlight"),
-                    ]
-                ),
-                FieldRowPanel(
-                    [
-                        FieldPanel("hero_title_line2"),
-                        FieldPanel("hero_title_line2_highlight"),
-                    ]
-                ),
+                FieldRowPanel([
+                    FieldPanel("hero_title_line1"),
+                    FieldPanel("hero_title_line1_highlight"),
+                ]),
+                FieldRowPanel([
+                    FieldPanel("hero_title_line2"),
+                    FieldPanel("hero_title_line2_highlight"),
+                ]),
                 FieldPanel("hero_subtitle"),
-                FieldPanel("hero_cta_label"),
                 FieldPanel("hero_bg_image"),
                 FieldPanel("hero_bg_video_url"),
             ],
             heading="Hero Section",
+        ),
+        MultiFieldPanel(
+            [
+                FieldRowPanel([FieldPanel("hero_btn1_label"), FieldPanel("hero_btn1_url")]),
+                FieldRowPanel([FieldPanel("hero_btn2_label"), FieldPanel("hero_btn2_url")]),
+                FieldRowPanel([FieldPanel("hero_btn3_label"), FieldPanel("hero_btn3_url")]),
+                FieldRowPanel([FieldPanel("hero_btn4_label"), FieldPanel("hero_btn4_url")]),
+            ],
+            heading="Hero Panel Buttons",
         ),
     ]
 
@@ -81,10 +94,14 @@ class HomePage(Page):
         APIField("hero_title_line2"),
         APIField("hero_title_line2_highlight"),
         APIField("hero_subtitle"),
-        APIField("hero_cta_label"),
-        APIField(
-            "hero_bg_image",
-            serializer=ImageRenditionField("original"),
-        ),
+        APIField("hero_bg_image", serializer=ImageRenditionField("original")),
         APIField("hero_bg_video_url"),
+        APIField("hero_btn1_label"),
+        APIField("hero_btn1_url"),
+        APIField("hero_btn2_label"),
+        APIField("hero_btn2_url"),
+        APIField("hero_btn3_label"),
+        APIField("hero_btn3_url"),
+        APIField("hero_btn4_label"),
+        APIField("hero_btn4_url"),
     ]

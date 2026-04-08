@@ -8,10 +8,18 @@ const FIELDS = [
   "hero_title_line2",
   "hero_title_line2_highlight",
   "hero_subtitle",
-  "hero_cta_label",
   "hero_bg_image",
   "hero_bg_video_url",
+  "hero_btn1_label", "hero_btn1_url",
+  "hero_btn2_label", "hero_btn2_url",
+  "hero_btn3_label", "hero_btn3_url",
+  "hero_btn4_label", "hero_btn4_url",
 ].join(",");
+
+export interface HeroPanelBtn {
+  label: string;
+  url: string;
+}
 
 export interface HomepageHeroData {
   hero_title_line1: string;
@@ -19,9 +27,12 @@ export interface HomepageHeroData {
   hero_title_line2: string;
   hero_title_line2_highlight: string;
   hero_subtitle: string;
-  hero_cta_label: string;
   hero_bg_image: { url: string } | null;
   hero_bg_video_url: string;
+  hero_btn1_label: string; hero_btn1_url: string;
+  hero_btn2_label: string; hero_btn2_url: string;
+  hero_btn3_label: string; hero_btn3_url: string;
+  hero_btn4_label: string; hero_btn4_url: string;
 }
 
 // Module-level cache — survives navigations so the data is available
