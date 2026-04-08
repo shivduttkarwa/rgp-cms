@@ -78,26 +78,41 @@ const PropertyListingSection = ({
     const container = filterTabsRef.current;
     const pill = pillRef.current;
     if (!container || !pill) return;
-    const activeBtn =
-      container.querySelector<HTMLElement>(".filter-tab.active");
-    if (!activeBtn) return;
 
-    if (!pillInitialized.current) {
-      gsap.set(pill, {
+    const positionPill = (animate = false) => {
+      const activeBtn =
+        container.querySelector<HTMLElement>(".filter-tab.active");
+      if (!activeBtn) return;
+
+      const nextState = {
         left: activeBtn.offsetLeft,
         width: activeBtn.offsetWidth,
-      });
-      pillInitialized.current = true;
-    } else {
+      };
+
+      if (!pillInitialized.current || !animate) {
+        gsap.set(pill, nextState);
+        pillInitialized.current = true;
+        return;
+      }
+
       gsap.to(pill, {
-        left: activeBtn.offsetLeft,
-        width: activeBtn.offsetWidth,
+        ...nextState,
         duration: 0.38,
         ease: "expo.out",
         overwrite: "auto",
       });
-    }
-  }, [activeFilter]);
+    };
+
+    const rafId = window.requestAnimationFrame(() => positionPill(pillInitialized.current));
+    const handleResize = () => positionPill(false);
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.cancelAnimationFrame(rafId);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [activeFilter, c.all_tab_label, c.filter_tabs]);
 
   useEffect(() => {
     const cards =
