@@ -14,7 +14,9 @@ class ListingsAPIViewSet(BaseAPIViewSet):
         "address", "city", "state", "zip_code", "status", "price_label",
         "featured", "overview", "map_embed_url", "video_tour_url",
         "agent_name", "agent_title", "agent_phone", "agent_email",
-        "agent_rating", "agent_review_count",
+        "agent_rating", "agent_review_count", "api_gallery_images",
+        "api_detail_stats", "api_detail_features", "api_detail_rows",
+        "api_nearby_locations", "api_video_thumbnail", "api_agent_image",
     ]
     meta_fields = []
     listing_default_fields = [

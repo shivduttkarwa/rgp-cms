@@ -42,7 +42,7 @@ function App() {
             />
             <Route path="/contact" element={<ContactPage ready={loaded} />} />
             <Route path="/properties" element={<PropertiesPage />} />
-            <Route path="/properties/:id" element={<PropertyPage />} />
+            <Route path="/properties/:slug" element={<PropertyPage />} />
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/terms" element={<CollectionNoticePage />} />
             <Route path="/cookies" element={<CookiesPage />} />

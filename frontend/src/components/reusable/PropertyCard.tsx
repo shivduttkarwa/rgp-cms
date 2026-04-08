@@ -30,6 +30,7 @@ export interface Property {
   daysOnMarket?: number;
   deposit?: number;
   minLease?: string;
+  hasDetailPage?: boolean;
 }
 
 // ─── Helpers ───────────────────────────────────────────────────────────────
@@ -195,15 +196,26 @@ export const PropertyCard = ({
           </div>
         )}
 
-        <Link
-          to={`/properties/${property.slug}`}
-          className="card-btn btn-primary"
-        >
-          <span>
-            {isSold ? "View Details" : isRent ? "Schedule Tour" : "View Property"}
-          </span>
-          <ArrowRight size={16} />
-        </Link>
+        {property.hasDetailPage === false ? (
+          <button
+            type="button"
+            className="card-btn btn-primary"
+            disabled
+          >
+            <span>Details Coming Soon</span>
+            <ArrowRight size={16} />
+          </button>
+        ) : (
+          <Link
+            to={`/properties/${property.slug}`}
+            className="card-btn btn-primary"
+          >
+            <span>
+              {isSold ? "View Details" : isRent ? "Schedule Tour" : "View Property"}
+            </span>
+            <ArrowRight size={16} />
+          </Link>
+        )}
       </div>
     </div>
   );

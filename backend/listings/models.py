@@ -201,6 +201,66 @@ class Listing(ClusterableModel):
     def __str__(self):
         return self.title
 
+    def _serialize_image(self, image, alt_text=""):
+        if not image:
+            return None
+        return {
+            "url": image.file.url,
+            "alt": alt_text or image.title,
+        }
+
+    def api_gallery_images(self):
+        return [
+            self._serialize_image(item.image, item.alt)
+            for item in self.gallery_images.all()
+            if item.image
+        ]
+
+    def api_detail_stats(self):
+        return [
+            {
+                "icon": item.icon,
+                "value": item.value,
+                "label": item.label,
+            }
+            for item in self.detail_stats.all()
+        ]
+
+    def api_detail_features(self):
+        return [
+            {
+                "icon": item.icon,
+                "title": item.title,
+                "description": item.description,
+            }
+            for item in self.detail_features.all()
+        ]
+
+    def api_detail_rows(self):
+        return [
+            {
+                "label": item.label,
+                "value": item.value,
+            }
+            for item in self.detail_rows.all()
+        ]
+
+    def api_nearby_locations(self):
+        return [
+            {
+                "name": item.name,
+                "distance": item.distance,
+                "type": item.type,
+            }
+            for item in self.nearby_locations.all()
+        ]
+
+    def api_video_thumbnail(self):
+        return self._serialize_image(self.video_thumbnail)
+
+    def api_agent_image(self):
+        return self._serialize_image(self.agent_image, self.agent_name)
+
     class Meta:
         verbose_name = "Listing"
         verbose_name_plural = "Listings"
