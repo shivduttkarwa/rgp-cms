@@ -14,6 +14,14 @@ const FIELDS = [
   "hero_btn2_label", "hero_btn2_url",
   "hero_btn3_label", "hero_btn3_url",
   "hero_btn4_label", "hero_btn4_url",
+  "intro_label",
+  "intro_headline1",
+  "intro_headline2",
+  "intro_founder_name",
+  "intro_text",
+  "intro_cta1_label", "intro_cta1_url",
+  "intro_cta2_label", "intro_cta2_url",
+  "intro_image",
 ].join(",");
 
 export interface HeroPanelBtn {
@@ -33,6 +41,21 @@ export interface HomepageHeroData {
   hero_btn2_label: string; hero_btn2_url: string;
   hero_btn3_label: string; hero_btn3_url: string;
   hero_btn4_label: string; hero_btn4_url: string;
+  intro_label: string;
+  intro_headline1: string;
+  intro_headline2: string;
+  intro_founder_name: string;
+  intro_text: string;
+  intro_cta1_label: string; intro_cta1_url: string;
+  intro_cta2_label: string; intro_cta2_url: string;
+  intro_image: { url: string } | null;
+}
+
+// Resolve media URLs that come from Wagtail as relative paths (e.g. /media/...)
+export function resolveMediaUrl(url: string | undefined | null): string | undefined {
+  if (!url) return undefined;
+  if (url.startsWith("http")) return url;
+  return `${API_BASE}${url}`;
 }
 
 // Module-level cache — survives navigations so the data is available

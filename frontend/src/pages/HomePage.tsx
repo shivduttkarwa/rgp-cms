@@ -8,7 +8,7 @@ import PropertyListingSection from "@/sections/PropertyListingSection";
 import ServiceSelection from "@/sections/ServiceSelection";
 import PhilosophyPillars from "@/sections/Philosophy";
 import { initGsapSwitchAnimations } from "@/lib/gsapSwitchAnimations";
-import { useHomepageHero } from "@/hooks/useHomepageHero";
+import { useHomepageHero, resolveMediaUrl } from "@/hooks/useHomepageHero";
 
 /** Wraps the highlight word in a <span> with the given class. */
 function withHighlight(text: string, highlight: string, cls: string) {
@@ -62,7 +62,7 @@ export default function HomePage({ ready = false }: { ready?: boolean }) {
     ? withHighlight(hero.hero_title_line2, hero.hero_title_line2_highlight, "rg-amber")
     : undefined;
 
-  const bgImage = hero?.hero_bg_image?.url ?? undefined;
+  const bgImage = resolveMediaUrl(hero?.hero_bg_image?.url);
   const bgVideo = hero?.hero_bg_video_url || undefined;
 
   return (
@@ -88,7 +88,18 @@ export default function HomePage({ ready = false }: { ready?: boolean }) {
         }
       />
 
-      <Intro />
+      <Intro
+        label={hero?.intro_label}
+        headline1={hero?.intro_headline1}
+        headline2={hero?.intro_headline2}
+        founderName={hero?.intro_founder_name}
+        text={hero?.intro_text}
+        cta1Label={hero?.intro_cta1_label}
+        cta1Url={hero?.intro_cta1_url}
+        cta2Label={hero?.intro_cta2_label}
+        cta2Url={hero?.intro_cta2_url}
+        imageUrl={resolveMediaUrl(hero?.intro_image?.url)}
+      />
       <PropertyListingSection />
       <ServiceSelection />
       <PhilosophyPillars />

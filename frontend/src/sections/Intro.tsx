@@ -5,13 +5,39 @@ const base = import.meta.env.BASE_URL?.endsWith("/")
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
 
-const Intro = () => {
+interface IntroProps {
+  label?: string;
+  headline1?: string;
+  headline2?: string;
+  founderName?: string;
+  text?: string;
+  cta1Label?: string;
+  cta1Url?: string;
+  cta2Label?: string;
+  cta2Url?: string;
+  imageUrl?: string;
+}
+
+const Intro = ({
+  label       = "About the Founder",
+  headline1   = "Building Wealth",
+  headline2   = "Through Property,",
+  founderName = "— Rahul Singh",
+  text        = "Real Gold Properties is a vision turned reality — a private equity approach to multi-family real estate. Founded by Rahul Singh, we focus on disciplined acquisitions that deliver consistent returns.",
+  cta1Label   = "Book a Free Appraisal",
+  cta1Url     = "/contact",
+  cta2Label   = "Meet Rahul",
+  cta2Url     = "/about",
+  imageUrl,
+}: IntroProps) => {
+  const imgSrc = imageUrl ?? `${base}images/rahul-singh.jpg`;
+
   return (
     <section className="intro">
       {/* Left: Content */}
       <div className="intro-content">
         <span className="intro-label" data-gsap="fade-up">
-          About the Founder
+          {label}
         </span>
 
         <h1
@@ -19,37 +45,35 @@ const Intro = () => {
           data-gsap="char-reveal"
           data-gsap-start="top 85%"
         >
-          Building Wealth
+          {headline1}
           <br />
-          Through Property,
-          <span className="founder">— Rahul Singh</span>
+          {headline2}
+          <span className="founder">{founderName}</span>
         </h1>
 
         <p className="intro-text" data-gsap="fade-up" data-gsap-delay="0.2">
-          Real Gold Properties is a vision turned reality — a private equity
-          approach to multi-family real estate. Founded by Rahul Singh, we focus
-          on disciplined acquisitions that deliver consistent returns.
+          {text}
         </p>
 
         <div className="intro-cta-group">
           <Link
-            to="/contact"
+            to={cta1Url}
             className="intro-cta intro-cta--primary"
             data-gsap="btn-clip-reveal"
             data-gsap-delay="0.2"
           >
-            <span>Book a Free Appraisal</span>
+            <span>{cta1Label}</span>
             <svg viewBox="0 0 24 24">
               <path d="M5 12h14M13 6l6 6-6 6" />
             </svg>
           </Link>
           <Link
-            to="/about"
+            to={cta2Url}
             className="intro-cta intro-cta--ghost"
             data-gsap="btn-clip-reveal"
             data-gsap-delay="0.3"
           >
-            <span>Meet Rahul</span>
+            <span>{cta2Label}</span>
           </Link>
         </div>
       </div>
@@ -60,15 +84,8 @@ const Intro = () => {
         data-gsap="clip-reveal-right"
         data-gsap-start="top 60%"
       >
-        <img
-          src={`${base}images/rahul-singh.jpg`}
-          alt="Rahul Singh — Real Gold Properties"
-        />
-
-        {/* Bottom gradient */}
+        <img src={imgSrc} alt={founderName} />
         <div className="intro-img-gradient" />
-
-        {/* Corner brackets */}
         <div className="intro-img-corner intro-img-corner--tl" />
         <div className="intro-img-corner intro-img-corner--br" />
       </div>
