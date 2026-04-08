@@ -3,6 +3,7 @@ from wagtail.blocks import (
     ListBlock, ChoiceBlock,
 )
 from wagtail.images.blocks import ImageChooserBlock as BaseImageChooserBlock
+from wagtail.snippets.blocks import SnippetChooserBlock
 
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
@@ -19,6 +20,49 @@ class ImageChooserBlock(BaseImageChooserBlock):
             "height": value.height,
             "alt": value.title,
         }
+
+
+def serialize_listing_card(listing):
+    if not listing:
+        return None
+    return {
+        "id": listing.id,
+        "title": listing.title,
+        "slug": listing.slug,
+        "meta": {"slug": listing.slug},
+        "category": listing.category,
+        "location": listing.location,
+        "price": listing.price,
+        "sold_price": listing.sold_price,
+        "card_image": (
+            {
+                "url": listing.card_image.file.url,
+            }
+            if listing.card_image
+            else None
+        ),
+        "beds": listing.beds,
+        "baths": listing.baths,
+        "sqft": listing.sqft,
+        "garage": listing.garage,
+        "badge": listing.badge,
+        "is_new": listing.is_new,
+        "views": listing.views,
+        "sold_date": listing.sold_date,
+        "days_on_market": listing.days_on_market,
+        "deposit": listing.deposit,
+        "min_lease": listing.min_lease,
+        "card_features": listing.card_features,
+        "has_detail_page": listing.has_detail_page,
+    }
+
+
+class ListingChooserBlock(SnippetChooserBlock):
+    def __init__(self, **kwargs):
+        super().__init__("listings.Listing", **kwargs)
+
+    def get_api_representation(self, value, context=None):
+        return serialize_listing_card(value)
 
 
 # ── CTA variants ─────────────────────────────────────────────────────────────
@@ -109,6 +153,11 @@ class ListingSectionBlock(StructBlock):
     # ── Filters ────────────────────────────────────────
     all_tab_label = CharBlock(max_length=20, default="All")
     filter_tabs   = ListBlock(FilterTabBlock(), min_num=1, max_num=3)
+    selected_listings = ListBlock(
+        ListingChooserBlock(),
+        required=False,
+        help_text="Only the listings added here will appear in this section.",
+    )
 
     # ── View-all link ──────────────────────────────────
     view_all_label = CharBlock(max_length=60,  default="View All Properties")

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import type { CmsListing } from "./useListings";
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? "http://localhost:8000";
 
@@ -62,6 +63,7 @@ export interface ListingSectionData {
   subtitle: string;
   all_tab_label: string;
   filter_tabs: FilterTab[];
+  selected_listings: CmsListing[];
   view_all_label: string;
   view_all_url: string;
 }
