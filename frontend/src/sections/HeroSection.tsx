@@ -47,6 +47,16 @@ export default function HeroSection({
   panel,
 }: HeroSectionProps) {
   const publicUrl = import.meta.env.BASE_URL || "/";
+  const resolveUrl = (path: string) =>
+    path.startsWith("http") || path.startsWith("/media") ? path : `${publicUrl}${path}`;
+
+  // Detect Vimeo and extract the embed URL
+  const vimeoId = bgVideo
+    ? (bgVideo.match(/vimeo\.com\/(?:video\/)?(\d+)/)?.[1] ?? null)
+    : null;
+  const vimeoEmbedUrl = vimeoId
+    ? `https://player.vimeo.com/video/${vimeoId}?background=1&autoplay=1&loop=1&muted=1&autopause=0`
+    : null;
   const bgRef = useRef<HTMLDivElement>(null);
   const vignetteRef = useRef<HTMLDivElement>(null);
   const titleOneRef = useRef<HTMLDivElement>(null);
@@ -240,16 +250,24 @@ export default function HeroSection({
         >
           <img
             className="rgp-hero__bg-poster"
-            src={`${publicUrl}${bgPoster || bgImage}`}
+            src={resolveUrl(bgPoster || bgImage)}
             alt=""
             loading="eager"
             fetchPriority="high"
           />
-          {showVideo && (
+          {showVideo && vimeoEmbedUrl ? (
+            <iframe
+              className="rgp-hero__bg-video rgp-hero__bg-vimeo"
+              src={vimeoEmbedUrl}
+              allow="autoplay; fullscreen"
+              allowFullScreen
+              onLoad={() => setVideoReady(true)}
+            />
+          ) : showVideo ? (
             <video
               className="rgp-hero__bg-video"
               ref={videoRef}
-              src={`${publicUrl}${bgVideo}`}
+              src={resolveUrl(bgVideo)}
               autoPlay
               loop
               muted
@@ -257,7 +275,7 @@ export default function HeroSection({
               controls={false}
               disablePictureInPicture
               preload="auto"
-              poster={`${publicUrl}${bgPoster || bgImage}`}
+              poster={resolveUrl(bgPoster || bgImage)}
               onLoadedMetadata={() => {
                 requestAnimationFrame(() => {
                   requestAnimationFrame(() => setVideoReady(true));
@@ -268,7 +286,7 @@ export default function HeroSection({
                 void videoRef.current?.play();
               }}
             />
-          )}
+          ) : null}
         </div>
 
         {/* ── VIGNETTE ── */}

@@ -109,6 +109,21 @@ a {
   opacity: 0;
 }
 
+/* Vimeo iframe background — needs border:0 and pointer-events:none */
+.rgp-hero__bg-vimeo {
+  border: 0;
+  pointer-events: none;
+  /* Vimeo player has a fixed aspect ratio; scale it up to cover */
+  width: 100vw;
+  height: 56.25vw; /* 16:9 */
+  min-height: 100vh;
+  min-width: 177.78vh; /* 16:9 */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  position: absolute;
+}
+
 /* ─── VIGNETTE ─── */
 .rgp-hero__vignette {
   position: absolute;
