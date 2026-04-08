@@ -1,5 +1,6 @@
 from wagtail.blocks import (
     StructBlock, CharBlock, TextBlock, StreamBlock,
+    ListBlock, ChoiceBlock,
 )
 from wagtail.images.blocks import ImageChooserBlock as BaseImageChooserBlock
 
@@ -84,6 +85,52 @@ class HeroBlock(StructBlock):
         icon = "image"
         label = "Hero Section"
         template = None  # headless — no Django template needed
+
+
+class FilterTabBlock(StructBlock):
+    category = ChoiceBlock(choices=[
+        ("for-sale", "For Sale"),
+        ("sold", "Sold"),
+        ("for-rent", "For Rent"),
+    ])
+    label = CharBlock(max_length=30)
+
+    class Meta:
+        icon = "tag"
+        label = "Filter Tab"
+
+
+class ListingSectionBlock(StructBlock):
+    # ── Header ─────────────────────────────────────────
+    badge_label  = CharBlock(max_length=60,  default="Prime Listings")
+    headline     = CharBlock(max_length=120, default="Discover Your Dream Home")
+    subtitle     = TextBlock(default="Explore our handpicked collection of premium properties designed for modern living")
+
+    # ── Filters ────────────────────────────────────────
+    all_tab_label = CharBlock(max_length=20, default="All")
+    filter_tabs   = ListBlock(FilterTabBlock(), min_num=1, max_num=3)
+
+    # ── View-all link ──────────────────────────────────
+    view_all_label = CharBlock(max_length=60,  default="View All Properties")
+    view_all_url   = CharBlock(max_length=255, default="/properties")
+
+    class Meta:
+        icon = "list-ul"
+        label = "Property Listing Section"
+        template = None
+
+
+class EoiCtaBlock(StructBlock):
+    badge        = CharBlock(max_length=80,  default="Expression of Interest")
+    title        = CharBlock(max_length=160, default="Ready to make an offer on a property you love?")
+    text         = TextBlock(default="Complete our full Expression of Interest form with the exact buyer, offer, condition, and solicitor details needed for a clean review.")
+    button_label = CharBlock(max_length=60,  default="Open the Form")
+    button_url   = CharBlock(max_length=255, default="/expressions-of-interest")
+
+    class Meta:
+        icon = "pick"
+        label = "EOI CTA Bar"
+        template = None
 
 
 class IntroBlock(StructBlock):

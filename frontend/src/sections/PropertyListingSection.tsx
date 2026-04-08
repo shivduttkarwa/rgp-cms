@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -17,6 +17,8 @@ import {
   PropertyCard,
   type Category,
 } from "../components/reusable/PropertyCard";
+import { useListings, toPropertyCardShape } from "../hooks/useListings";
+import type { ListingSectionData, EoiCtaData } from "../hooks/useHomePage";
 import "./PropertyListingsection.css";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -316,13 +318,49 @@ const propertiesData = [
   },
 ];
 
-const filterTabs = [
-  { id: "for-sale", label: "For Sale", icon: Tag, count: 3 },
-  { id: "sold", label: "Sold", icon: CheckCircle, count: 10 },
-  { id: "for-rent", label: "For Rent", icon: Key, count: 3 },
-];
+const CATEGORY_ICONS: Record<string, React.ElementType> = {
+  "for-sale": Tag,
+  "sold": CheckCircle,
+  "for-rent": Key,
+};
 
-const PropertyListingSection = () => {
+const DEFAULT_CMS: ListingSectionData = {
+  badge_label:   "Prime Listings",
+  headline:      "Discover Your Dream Home",
+  subtitle:      "Explore our handpicked collection of premium properties designed for modern living",
+  all_tab_label: "All",
+  filter_tabs:   [
+    { category: "for-sale", label: "For Sale" },
+    { category: "sold",     label: "Sold"     },
+    { category: "for-rent", label: "For Rent" },
+  ],
+  view_all_label: "View All Properties",
+  view_all_url:   "/properties",
+};
+
+const DEFAULT_EOI: EoiCtaData = {
+  badge:        "Expression of Interest",
+  title:        "Ready to make an offer on a property you love?",
+  text:         "Complete our full Expression of Interest form with the exact buyer, offer, condition, and solicitor details needed for a clean review.",
+  button_label: "Open the Form",
+  button_url:   "/expressions-of-interest",
+};
+
+const PropertyListingSection = ({
+  cms,
+  eoiCms,
+}: {
+  cms?: ListingSectionData | null;
+  eoiCms?: EoiCtaData | null;
+}) => {
+  const c = cms ?? DEFAULT_CMS;
+  const eoi = eoiCms ?? DEFAULT_EOI;
+  const cmsListings = useListings();
+  // Use CMS data when available, fall back to hardcoded data
+  const allProperties = cmsListings.length > 0
+    ? cmsListings.map(toPropertyCardShape)
+    : propertiesData;
+
   const [activeFilter, setActiveFilter] = useState<Category | "*">("for-sale");
   const [displayedFilter, setDisplayedFilter] = useState<Category | "*">(
     "for-sale",
@@ -385,16 +423,12 @@ const PropertyListingSection = () => {
 
   const displayed =
     displayedFilter === "*"
-      ? propertiesData.reduce<typeof propertiesData>((acc, p) => {
-          const count = acc.filter(
-            (item) => item.category === p.category,
-          ).length;
+      ? allProperties.reduce<typeof allProperties>((acc, p) => {
+          const count = acc.filter((item) => item.category === p.category).length;
           if (count < 3) acc.push(p);
           return acc;
         }, [])
-      : propertiesData
-          .filter((p) => p.category === displayedFilter)
-          .slice(0, 3);
+      : allProperties.filter((p) => p.category === displayedFilter).slice(0, 3);
 
   const handleFilterChange = (filter: Category | "*") => {
     if (filter === activeFilter || isExiting) return;
@@ -412,22 +446,21 @@ const PropertyListingSection = () => {
         <header className="section-header">
           <div className="section-badge" data-gsap="fade-up">
             <Building2 size={16} />
-            <span>Prime Listings</span>
+            <span>{c.badge_label}</span>
           </div>
           <h2
             className="section-title"
             data-gsap="char-reveal"
             data-gsap-start="top 85%"
           >
-            Discover Your <em>Dream Home</em>
+            {c.headline}
           </h2>
           <p
             className="section-subtitle"
             data-gsap="fade-up"
             data-gsap-delay="0.15"
           >
-            Explore our handpicked collection of premium properties designed for
-            modern living
+            {c.subtitle}
           </p>
         </header>
 
@@ -448,18 +481,21 @@ const PropertyListingSection = () => {
               onClick={() => handleFilterChange("*")}
               className={`filter-tab ${activeFilter === "*" ? "active" : ""}`}
             >
-              <span>All</span>
+              <span>{c.all_tab_label}</span>
             </button>
-            {filterTabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => handleFilterChange(tab.id as Category)}
-                className={`filter-tab ${activeFilter === tab.id ? "active" : ""}`}
-              >
-                <tab.icon size={16} />
-                <span>{tab.label}</span>
-              </button>
-            ))}
+            {c.filter_tabs.map((tab) => {
+              const Icon = CATEGORY_ICONS[tab.category] ?? Tag;
+              return (
+                <button
+                  key={tab.category}
+                  onClick={() => handleFilterChange(tab.category as Category)}
+                  className={`filter-tab ${activeFilter === tab.category ? "active" : ""}`}
+                >
+                  <Icon size={16} />
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -527,11 +563,11 @@ const PropertyListingSection = () => {
 
         <div className="view-all-wrapper">
           <Link
-            to="/properties"
+            to={c.view_all_url}
             className="view-all-btn"
             data-gsap="btn-clip-reveal"
           >
-            <span>View All Properties</span>
+            <span>{c.view_all_label}</span>
             <ArrowRight size={18} />
           </Link>
         </div>
@@ -545,33 +581,31 @@ const PropertyListingSection = () => {
             <div className="listing-cta__copy">
               <div className="listing-cta__badge" data-gsap="fade-up">
                 <Building2 size={20} />
-                <span>Expression of Interest</span>
+                <span>{eoi.badge}</span>
               </div>
               <h3
                 className="listing-cta__title"
                 data-gsap="char-reveal"
                 data-gsap-start="top 88%"
               >
-                Ready to make an offer on a property you love?
+                {eoi.title}
               </h3>
               <p
                 className="listing-cta__text"
                 data-gsap="fade-up"
                 data-gsap-delay="0.14"
               >
-                Complete our full Expression of Interest form with the exact
-                buyer, offer, condition, and solicitor details needed for a
-                clean review.
+                {eoi.text}
               </p>
             </div>
 
             <Link
-              to="/expressions-of-interest"
+              to={eoi.button_url}
               className="listing-cta__button"
               data-gsap="btn-clip-reveal"
               data-gsap-delay="0.2"
             >
-              <span>Open the Form</span>
+              <span>{eoi.button_label}</span>
               <ArrowRight size={18} />
             </Link>
           </div>

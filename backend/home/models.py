@@ -3,7 +3,7 @@ from wagtail.fields import StreamField
 from wagtail.api import APIField
 from wagtail.admin.panels import FieldPanel
 
-from .blocks import HeroBlock, IntroBlock
+from .blocks import HeroBlock, IntroBlock, ListingSectionBlock, EoiCtaBlock
 
 
 class HomePage(Page):
@@ -11,6 +11,8 @@ class HomePage(Page):
         [
             ("hero", HeroBlock()),
             ("intro", IntroBlock()),
+            ("listing_section", ListingSectionBlock()),
+            ("eoi_cta", EoiCtaBlock()),
         ],
         blank=True,
         use_json_field=True,

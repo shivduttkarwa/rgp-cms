@@ -62,26 +62,24 @@ export default function HomePage({ ready = false }: { ready?: boolean }) {
   // Resolve CTA from StreamBlock (0 or 1 items)
   const ctaBlock = hero?.cta?.[0] ?? null;
 
-  let heroPanel: React.ReactNode = null;
-  let showCta = false;
-  let ctaLabel: string | undefined;
+  // If CMS says single_cta, show the button. Otherwise always render the panel
+  // (with CMS btns when available, defaults when not) so GSAP always uses the
+  // clip-path animation path — avoids a timing mismatch on first load.
+  const isSingleCta = ctaBlock?.type === "single_cta";
+  const showCta = isSingleCta;
+  const ctaLabel = isSingleCta ? (ctaBlock as { type: "single_cta"; value: { label: string; url: string } }).value.label : undefined;
 
-  if (ctaBlock?.type === "panel_buttons") {
-    const v = ctaBlock.value;
-    heroPanel = (
-      <HeroSearchPanel
-        btns={[
-          { label: v.btn1.label, url: v.btn1.url },
-          { label: v.btn2.label, url: v.btn2.url },
-          { label: v.btn3.label, url: v.btn3.url },
-          { label: v.btn4.label, url: v.btn4.url },
-        ]}
-      />
-    );
-  } else if (ctaBlock?.type === "single_cta") {
-    showCta = true;
-    ctaLabel = ctaBlock.value.label;
-  }
+  const panelBtns =
+    ctaBlock?.type === "panel_buttons"
+      ? [
+          { label: ctaBlock.value.btn1.label, url: ctaBlock.value.btn1.url },
+          { label: ctaBlock.value.btn2.label, url: ctaBlock.value.btn2.url },
+          { label: ctaBlock.value.btn3.label, url: ctaBlock.value.btn3.url },
+          { label: ctaBlock.value.btn4.label, url: ctaBlock.value.btn4.url },
+        ]
+      : undefined; // HeroSearchPanel will use its own defaults
+
+  const heroPanel = isSingleCta ? undefined : <HeroSearchPanel btns={panelBtns} />;
 
   return (
     <div ref={pageRef}>
@@ -110,7 +108,7 @@ export default function HomePage({ ready = false }: { ready?: boolean }) {
         cta2Url={intro?.cta2_url}
         imageUrl={resolveMediaUrl(intro?.image?.url)}
       />
-      <PropertyListingSection />
+      <PropertyListingSection cms={page?.listing_section} eoiCms={page?.eoi_cta} />
       <ServiceSelection />
       <PhilosophyPillars />
       <PortfolioShowcase />

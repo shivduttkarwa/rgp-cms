@@ -51,9 +51,34 @@ export interface IntroData {
   image: CmsImage | null;
 }
 
+export interface FilterTab {
+  category: "for-sale" | "sold" | "for-rent";
+  label: string;
+}
+
+export interface ListingSectionData {
+  badge_label: string;
+  headline: string;
+  subtitle: string;
+  all_tab_label: string;
+  filter_tabs: FilterTab[];
+  view_all_label: string;
+  view_all_url: string;
+}
+
+export interface EoiCtaData {
+  badge: string;
+  title: string;
+  text: string;
+  button_label: string;
+  button_url: string;
+}
+
 export interface HomePageData {
   hero: HeroData | null;
   intro: IntroData | null;
+  listing_section: ListingSectionData | null;
+  eoi_cta: EoiCtaData | null;
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -65,10 +90,12 @@ export function resolveMediaUrl(url: string | undefined | null): string | undefi
 }
 
 function parseBody(items: { type: string; value: unknown }[]): HomePageData {
-  const data: HomePageData = { hero: null, intro: null };
+  const data: HomePageData = { hero: null, intro: null, listing_section: null, eoi_cta: null };
   for (const block of items) {
     if (block.type === "hero") data.hero = block.value as HeroData;
     if (block.type === "intro") data.intro = block.value as IntroData;
+    if (block.type === "listing_section") data.listing_section = block.value as ListingSectionData;
+    if (block.type === "eoi_cta") data.eoi_cta = block.value as EoiCtaData;
   }
   return data;
 }
