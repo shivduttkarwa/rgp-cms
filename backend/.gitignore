@@ -46,3 +46,7 @@ static/
 # OS
 .DS_Store
 Thumbs.db
+
+# Local/dev settings (may contain secrets)
+backendcms/settings/local.py
+backendcms/settings/dev.py

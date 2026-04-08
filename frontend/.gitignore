@@ -30,6 +30,12 @@ pnpm-debug.log*
 .DS_Store
 Thumbs.db
 
+# Claude Code local settings
+.claude/
+
+# Internal screenshots / AI references
+ss for ai/
+
 # Vite
 vite.config.ts.timestamp-*
 
