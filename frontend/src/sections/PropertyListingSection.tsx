@@ -73,6 +73,7 @@ const PropertyListingSection = ({
   const filterTabsRef = useRef<HTMLDivElement>(null);
   const pillRef = useRef<HTMLDivElement>(null);
   const pillInitialized = useRef(false);
+  const hasPlayedInitialReveal = useRef(false);
 
   useLayoutEffect(() => {
     const container = filterTabsRef.current;
@@ -119,6 +120,11 @@ const PropertyListingSection = ({
       gridRef.current?.querySelectorAll<HTMLElement>(".property-card");
     if (!cards?.length) return;
 
+    if (hasPlayedInitialReveal.current) {
+      gsap.set(cards, { clearProps: "will-change,clip-path" });
+      return;
+    }
+
     gsap.set(cards, { clipPath: "inset(100% 0 0 0)", willChange: "clip-path" });
 
     const trigger = ScrollTrigger.create({
@@ -132,6 +138,7 @@ const PropertyListingSection = ({
           ease: "power3.inOut",
           stagger: 0.12,
           onComplete: () => {
+            hasPlayedInitialReveal.current = true;
             gsap.set(cards, { clearProps: "will-change,clip-path" });
           },
         });
@@ -142,7 +149,9 @@ const PropertyListingSection = ({
 
     return () => {
       trigger.kill();
-      gsap.set(cards, { clearProps: "will-change,clip-path" });
+      if (!hasPlayedInitialReveal.current) {
+        gsap.set(cards, { clearProps: "will-change,clip-path" });
+      }
     };
   }, [displayedFilter, allProperties.length]);
 
