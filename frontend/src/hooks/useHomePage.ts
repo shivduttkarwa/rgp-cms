@@ -1,0 +1,102 @@
+import { useEffect, useState } from "react";
+
+const API_BASE = import.meta.env.VITE_API_BASE ?? "http://localhost:8000";
+
+// ── Types ────────────────────────────────────────────────────────────────────
+
+interface CmsImage {
+  url: string;
+  width: number;
+  height: number;
+  alt: string;
+}
+
+export interface SingleCTA {
+  label: string;
+  url: string;
+}
+
+export interface PanelButtons {
+  btn1: SingleCTA;
+  btn2: SingleCTA;
+  btn3: SingleCTA;
+  btn4: SingleCTA;
+}
+
+export type HeroCTA =
+  | { type: "single_cta"; value: SingleCTA }
+  | { type: "panel_buttons"; value: PanelButtons };
+
+export interface HeroData {
+  title_line1: string;
+  title_line1_highlight: string;
+  title_line2: string;
+  title_line2_highlight: string;
+  subtitle: string;
+  bg_image: CmsImage | null;
+  bg_video_url: string;
+  cta: HeroCTA[];   // StreamBlock — array of 0 or 1 items
+}
+
+export interface IntroData {
+  label: string;
+  headline1: string;
+  headline2: string;
+  founder_name: string;
+  text: string;
+  cta1_label: string;
+  cta1_url: string;
+  cta2_label: string;
+  cta2_url: string;
+  image: CmsImage | null;
+}
+
+export interface HomePageData {
+  hero: HeroData | null;
+  intro: IntroData | null;
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+export function resolveMediaUrl(url: string | undefined | null): string | undefined {
+  if (!url) return undefined;
+  if (url.startsWith("http")) return url;
+  return `${API_BASE}${url}`;
+}
+
+function parseBody(items: { type: string; value: unknown }[]): HomePageData {
+  const data: HomePageData = { hero: null, intro: null };
+  for (const block of items) {
+    if (block.type === "hero") data.hero = block.value as HeroData;
+    if (block.type === "intro") data.intro = block.value as IntroData;
+  }
+  return data;
+}
+
+// ── Cache ─────────────────────────────────────────────────────────────────────
+
+let cache: HomePageData | null = null;
+
+// ── Hook ──────────────────────────────────────────────────────────────────────
+
+export function useHomePage() {
+  const [data, setData] = useState<HomePageData | null>(cache);
+
+  useEffect(() => {
+    if (cache) return;
+    fetch(`${API_BASE}/api/v2/pages/?type=home.HomePage&fields=body&limit=1`)
+      .then((r) => r.json())
+      .then((json) => {
+        const body = json?.items?.[0]?.body;
+        if (Array.isArray(body)) {
+          cache = parseBody(body);
+          setData(cache);
+        }
+      })
+      .catch(() => {
+        // API unavailable — components fall back to their built-in defaults
+      });
+  }, []);
+
+  return data;
+}
