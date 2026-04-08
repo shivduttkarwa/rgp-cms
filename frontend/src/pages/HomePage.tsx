@@ -27,6 +27,7 @@ export default function HomePage({ ready = false }: { ready?: boolean }) {
   const pageRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const page = useHomePage();
+  const homeReady = page !== undefined;
   const hero = page?.hero ?? null;
   const intro = page?.intro ?? null;
 
@@ -96,20 +97,32 @@ export default function HomePage({ ready = false }: { ready?: boolean }) {
         panel={heroPanel ?? undefined}
       />
 
-      <Intro
-        label={intro?.label}
-        headline1={intro?.headline1}
-        headline2={intro?.headline2}
-        founderName={intro?.founder_name}
-        text={intro?.text}
-        cta1Label={intro?.cta1_label}
-        cta1Url={intro?.cta1_url}
-        cta2Label={intro?.cta2_label}
-        cta2Url={intro?.cta2_url}
-        imageUrl={resolveMediaUrl(intro?.image?.url)}
-      />
-      <PropertyListingSection cms={page?.listing_section} eoiCms={page?.eoi_cta} />
-      <ServiceSelection />
+      {homeReady && (
+        <Intro
+          label={intro?.label}
+          headline1={intro?.headline1}
+          headline2={intro?.headline2}
+          founderName={intro?.founder_name}
+          text={intro?.text}
+          cta1Label={intro?.cta1_label}
+          cta1Url={intro?.cta1_url}
+          cta2Label={intro?.cta2_label}
+          cta2Url={intro?.cta2_url}
+          imageUrl={resolveMediaUrl(intro?.image?.url)}
+        />
+      )}
+      {homeReady && (
+        <PropertyListingSection
+          cms={page?.listing_section}
+          eoiCms={page?.eoi_cta}
+        />
+      )}
+      {homeReady && page?.service_section && (
+        <ServiceSelection
+          key={`${page.service_section.header?.title_prefix ?? ""}-${page.service_section.header?.title_highlight ?? ""}-${page.service_section.cta?.title_prefix ?? ""}-${page.service_section.cta?.title_highlight ?? ""}`}
+          cms={page.service_section}
+        />
+      )}
       <PhilosophyPillars />
       <PortfolioShowcase />
     </div>

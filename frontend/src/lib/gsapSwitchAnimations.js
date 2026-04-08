@@ -45,6 +45,10 @@ class GSAPAnimations {
       const desktopAnimation = el.getAttribute('data-gsap');
       const animationType = (isMobile && mobileAnimation) ? mobileAnimation : desktopAnimation;
 
+      if (!animationType) {
+        return;
+      }
+
       // Get values from attributes or use defaults
       const staggerAttr = el.getAttribute('data-gsap-stagger');
       const config = {

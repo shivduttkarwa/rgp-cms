@@ -144,6 +144,76 @@ class FilterTabBlock(StructBlock):
         label = "Filter Tab"
 
 
+class ServiceItemBlock(StructBlock):
+    id = ChoiceBlock(
+        choices=[
+            ("buy", "Buy"),
+            ("sell", "Sell"),
+            ("rent", "Rent"),
+        ],
+        default="buy",
+    )
+    label = CharBlock(
+        max_length=40,
+        required=False,
+        help_text="Large card title. Leave blank to use Buy / Sell / Rent automatically.",
+    )
+    description = TextBlock()
+    cta_label = CharBlock(max_length=60)
+    cta_url = CharBlock(max_length=255, default="/contact")
+
+    class Meta:
+        icon = "pick"
+        label = "Service Card"
+
+
+class ServiceHeaderBlock(StructBlock):
+    eyebrow = CharBlock(max_length=80, default="How Can We Help You?")
+    title_prefix = CharBlock(max_length=120, default="What Are You")
+    title_highlight = CharBlock(max_length=120, default="Looking For?")
+    subtitle = TextBlock(default="Whether you're buying, selling, or renting — we're here to make your real estate journey seamless and rewarding.")
+
+    class Meta:
+        icon = "title"
+        label = "Section Header"
+
+
+class ServiceTrustStatBlock(StructBlock):
+    value = CharBlock(max_length=30)
+    label = CharBlock(max_length=60)
+
+    class Meta:
+        icon = "snippet"
+        label = "Trust Stat"
+
+
+class ServiceCtaBlock(StructBlock):
+    eyebrow = CharBlock(max_length=80, default="Need Guidance?")
+    title_prefix = CharBlock(max_length=120, default="Not Sure Where to")
+    title_highlight = CharBlock(max_length=120, default="Start?")
+    text = TextBlock(default="Our experienced advisors are here to understand your needs and guide you through every step of your real estate journey.")
+    primary_label = CharBlock(max_length=60, default="Talk to an Expert")
+    primary_href = CharBlock(max_length=255, default="/contact")
+    secondary_label = CharBlock(max_length=60, default="0450 009 291")
+    secondary_href = CharBlock(max_length=255, default="tel:+61450009291")
+    trust_stats = ListBlock(ServiceTrustStatBlock(), min_num=0, max_num=3, required=False)
+
+    class Meta:
+        icon = "link"
+        label = "Bottom CTA"
+
+
+class ServiceSectionBlock(StructBlock):
+    header = ServiceHeaderBlock()
+    services = ListBlock(ServiceItemBlock(), min_num=1, max_num=3)
+    cta = ServiceCtaBlock()
+
+    class Meta:
+        icon = "list-ul"
+        label = "Service Selection Section"
+        template = None
+
+
 class ListingSectionBlock(StructBlock):
     # ── Header ─────────────────────────────────────────
     badge_label  = CharBlock(max_length=60,  default="Prime Listings")

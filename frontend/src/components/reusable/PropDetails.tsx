@@ -719,7 +719,6 @@ const VideoTour: React.FC<{
           src={resolvedUrl}
           title="Virtual Tour"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
         />
       )}
     </div>

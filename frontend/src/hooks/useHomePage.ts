@@ -76,10 +76,49 @@ export interface EoiCtaData {
   button_url: string;
 }
 
+export interface ServiceHeaderData {
+  eyebrow: string;
+  title_prefix: string;
+  title_highlight: string;
+  subtitle: string;
+}
+
+export interface ServiceItemData {
+  id: "buy" | "sell" | "rent";
+  label: string;
+  description: string;
+  cta_label: string;
+  cta_url: string;
+}
+
+export interface ServiceTrustStatData {
+  value: string;
+  label: string;
+}
+
+export interface ServiceCtaData {
+  eyebrow: string;
+  title_prefix: string;
+  title_highlight: string;
+  text: string;
+  primary_label: string;
+  primary_href: string;
+  secondary_label: string;
+  secondary_href: string;
+  trust_stats: ServiceTrustStatData[];
+}
+
+export interface ServiceSectionData {
+  header: ServiceHeaderData;
+  services: ServiceItemData[];
+  cta: ServiceCtaData;
+}
+
 export interface HomePageData {
   hero: HeroData | null;
   intro: IntroData | null;
   listing_section: ListingSectionData | null;
+  service_section: ServiceSectionData | null;
   eoi_cta: EoiCtaData | null;
 }
 
@@ -92,11 +131,12 @@ export function resolveMediaUrl(url: string | undefined | null): string | undefi
 }
 
 function parseBody(items: { type: string; value: unknown }[]): HomePageData {
-  const data: HomePageData = { hero: null, intro: null, listing_section: null, eoi_cta: null };
+  const data: HomePageData = { hero: null, intro: null, listing_section: null, service_section: null, eoi_cta: null };
   for (const block of items) {
     if (block.type === "hero") data.hero = block.value as HeroData;
     if (block.type === "intro") data.intro = block.value as IntroData;
     if (block.type === "listing_section") data.listing_section = block.value as ListingSectionData;
+    if (block.type === "service_section") data.service_section = block.value as ServiceSectionData;
     if (block.type === "eoi_cta") data.eoi_cta = block.value as EoiCtaData;
   }
   return data;
@@ -109,10 +149,11 @@ let cache: HomePageData | null = null;
 // ── Hook ──────────────────────────────────────────────────────────────────────
 
 export function useHomePage() {
-  const [data, setData] = useState<HomePageData | null>(cache);
+  const [data, setData] = useState<HomePageData | null | undefined>(
+    cache ?? undefined,
+  );
 
   useEffect(() => {
-    if (cache) return;
     fetch(`${API_BASE}/api/v2/pages/?type=home.HomePage&fields=body&limit=1`)
       .then((r) => r.json())
       .then((json) => {
@@ -123,7 +164,7 @@ export function useHomePage() {
         }
       })
       .catch(() => {
-        // API unavailable — components fall back to their built-in defaults
+        setData((current) => current ?? null);
       });
   }, []);
 

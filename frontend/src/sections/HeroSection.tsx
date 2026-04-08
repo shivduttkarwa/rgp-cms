@@ -260,7 +260,6 @@ export default function HeroSection({
               className="rgp-hero__bg-video rgp-hero__bg-vimeo"
               src={vimeoEmbedUrl}
               allow="autoplay; fullscreen"
-              allowFullScreen
               onLoad={() => setVideoReady(true)}
             />
           ) : showVideo ? (
