@@ -1,4 +1,4 @@
-// HomeTestimonials (Philosophy.tsx)
+// VideoTestimonial.tsx
 import { useRef, useState, useEffect } from "react";
 
 const base = import.meta.env.BASE_URL?.endsWith("/")
@@ -9,7 +9,9 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
-import "./Philosophy.css";
+import "./VideoTestimonial.css";
+
+const INITIAL_VISIBLE = 3;
 
 type Testimonial = {
   kicker: string;
@@ -85,7 +87,7 @@ function TestiCard({
     e.stopPropagation();
     const v = videoRef.current;
     if (!v) return;
-    v.muted = false; // imperative — React's muted prop doesn't sync reliably
+    v.muted = false;
     setFullPlay(true);
     setActiveId(t.title);
     v.play().catch(() => {});
@@ -152,8 +154,14 @@ function TestiCard({
   );
 }
 
-export default function PhilosophyPillars() {
+export default function VideoTestimonial() {
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [showAll, setShowAll] = useState(false);
+
+  const visibleCards = showAll
+    ? TESTIMONIALS
+    : TESTIMONIALS.slice(0, INITIAL_VISIBLE);
+  const hasMore = TESTIMONIALS.length > INITIAL_VISIBLE;
 
   return (
     <section className="rg-philo" aria-label="Client Testimonials">
@@ -180,7 +188,7 @@ export default function PhilosophyPillars() {
           data-gsap-delay="0.1"
           className="rg-philo__grid"
         >
-          {TESTIMONIALS.map((t) => (
+          {visibleCards.map((t) => (
             <TestiCard
               key={t.title}
               t={t}
@@ -190,7 +198,46 @@ export default function PhilosophyPillars() {
           ))}
         </div>
 
-        {/* Mobile swiper */}
+        {/* Show more / show less — desktop only */}
+        {hasMore && (
+          <div className="rg-philo__toggle-row">
+            <button
+              className="rg-philo__toggle-btn"
+              onClick={() => setShowAll((prev) => !prev)}
+              aria-expanded={showAll}
+            >
+              {showAll ? (
+                <>
+                  <span>Show Less</span>
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    aria-hidden="true"
+                  >
+                    <path d="M18 15l-6-6-6 6" />
+                  </svg>
+                </>
+              ) : (
+                <>
+                  <span>Show More</span>
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    aria-hidden="true"
+                  >
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                </>
+              )}
+            </button>
+          </div>
+        )}
+
+        {/* Mobile swiper — always shows all */}
         <div className="rg-philo__swiper-wrap">
           <Swiper
             modules={[Pagination]}

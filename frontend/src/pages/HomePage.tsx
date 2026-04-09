@@ -6,7 +6,7 @@ import Intro from "../sections/Intro";
 import PortfolioShowcase from "../sections/PortfolioShowcase";
 import PropertyListingSection from "@/sections/PropertyListingSection";
 import ServiceSelection from "@/sections/ServiceSelection";
-import PhilosophyPillars from "@/sections/Philosophy";
+import VideoTestimonial from "@/sections/VideoTestimonial";
 import { initGsapSwitchAnimations } from "@/lib/gsapSwitchAnimations";
 import { useHomePage, resolveMediaUrl } from "@/hooks/useHomePage";
 
@@ -123,7 +123,7 @@ export default function HomePage({ ready = false }: { ready?: boolean }) {
           cms={page.service_section}
         />
       )}
-      <PhilosophyPillars />
+      <VideoTestimonial />
       <PortfolioShowcase />
     </div>
   );
