@@ -1,6 +1,9 @@
 // VideoTestimonial.tsx
 import { useRef, useState, useEffect } from "react";
 import type { Swiper as SwiperType } from "swiper";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+gsap.registerPlugin(ScrollTrigger);
 
 const base = import.meta.env.BASE_URL?.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -179,6 +182,7 @@ function TestiCard({
 export default function VideoTestimonial() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const swiperRef = useRef<SwiperType | null>(null);
+  const sliderOuterRef = useRef<HTMLDivElement>(null);
   const [isBeginning, setIsBeginning] = useState(true);
   const [isEnd, setIsEnd] = useState(false);
 
@@ -186,6 +190,35 @@ export default function VideoTestimonial() {
     setIsBeginning(swiper.isBeginning);
     setIsEnd(swiper.isEnd);
   };
+
+  useEffect(() => {
+    const slides = sliderOuterRef.current?.querySelectorAll<HTMLElement>(".rg-philo__slide");
+    if (!slides?.length) return;
+
+    gsap.set(slides, { clipPath: "inset(100% 0 0 0)", willChange: "clip-path" });
+
+    const trigger = ScrollTrigger.create({
+      trigger: sliderOuterRef.current,
+      start: "top 85%",
+      once: true,
+      onEnter: () => {
+        gsap.to(slides, {
+          clipPath: "inset(0% 0 0 0)",
+          duration: 1.2,
+          ease: "power3.inOut",
+          stagger: 0.12,
+          onComplete: () => {
+            gsap.set(slides, { clearProps: "will-change,clip-path" });
+          },
+        });
+      },
+    });
+
+    return () => {
+      trigger.kill();
+      gsap.set(slides, { clearProps: "will-change,clip-path" });
+    };
+  }, []);
 
   return (
     <section className="rg-philo" aria-label="Client Testimonials">
@@ -206,7 +239,7 @@ export default function VideoTestimonial() {
         <div className="rg-philo__divider" role="separator" />
 
         {/* Unified slider — desktop + mobile */}
-        <div className="rg-philo__slider-outer">
+        <div className="rg-philo__slider-outer" ref={sliderOuterRef}>
           <Swiper
             modules={[Pagination, Navigation]}
             spaceBetween={20}
