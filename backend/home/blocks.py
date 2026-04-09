@@ -22,6 +22,31 @@ class ImageChooserBlock(BaseImageChooserBlock):
         }
 
 
+def serialize_video_testimonial(t):
+    """Serialise a Testimonial snippet to the shape VideoTestimonial.tsx expects."""
+    if not t:
+        return None
+    kicker = ""
+    if t.suburb and t.transaction_type:
+        kicker = f"{t.suburb} · {t.transaction_type}"
+    return {
+        "id": t.id,
+        "kicker": kicker,
+        "title": t.name,
+        "video_url": t.video_url,
+        "poster": {"url": t.poster.file.url} if t.poster else None,
+        "tint_var": t.tint_var or "gold",
+    }
+
+
+class TestimonialChooserBlock(SnippetChooserBlock):
+    def __init__(self, **kwargs):
+        super().__init__("testimonials.Testimonial", **kwargs)
+
+    def get_api_representation(self, value, context=None):
+        return serialize_video_testimonial(value)
+
+
 def serialize_listing_card(listing):
     if not listing:
         return None
@@ -249,6 +274,32 @@ class EoiCtaBlock(StructBlock):
     class Meta:
         icon = "pick"
         label = "EOI CTA Bar"
+        template = None
+
+
+class VideoTestimonialSectionBlock(StructBlock):
+    # ── Header ─────────────────────────────────────────────────────────────────
+    label              = CharBlock(max_length=60,  default="Testimonials")
+    headline           = CharBlock(max_length=120, default="What Our Clients Say")
+    headline_highlight = CharBlock(
+        max_length=60, default="Clients", required=False,
+        help_text="Word in the headline to render in gold",
+    )
+
+    # ── Cards ──────────────────────────────────────────────────────────────────
+    selected_testimonials = ListBlock(
+        TestimonialChooserBlock(),
+        required=False,
+        help_text="Choose video-type testimonials to display in this section.",
+    )
+
+    # ── CTA ────────────────────────────────────────────────────────────────────
+    cta_label = CharBlock(max_length=60,  default="Read All Reviews")
+    cta_url   = CharBlock(max_length=255, default="/testimonials")
+
+    class Meta:
+        icon = "media"
+        label = "Video Testimonial Section"
         template = None
 
 

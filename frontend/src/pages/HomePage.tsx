@@ -123,7 +123,7 @@ export default function HomePage({ ready = false }: { ready?: boolean }) {
           cms={page.service_section}
         />
       )}
-      <VideoTestimonial />
+      <VideoTestimonial cms={page?.testimonial_section} />
       <PortfolioShowcase />
     </div>
   );

@@ -8,12 +8,15 @@ gsap.registerPlugin(ScrollTrigger);
 const base = import.meta.env.BASE_URL?.endsWith("/")
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
+const API_BASE = import.meta.env.VITE_API_BASE ?? "http://localhost:8000";
+
 import { Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "./VideoTestimonial.css";
+import type { VideoTestimonialSectionData } from "@/hooks/useHomePage";
 
 type Testimonial = {
   kicker: string;
@@ -23,7 +26,13 @@ type Testimonial = {
   tintVar: "gold" | "amber" | "crimson";
 };
 
-const TESTIMONIALS: Testimonial[] = [
+function resolveUrl(url: string | null | undefined): string {
+  if (!url) return "";
+  if (url.startsWith("http")) return url;
+  return `${API_BASE}${url}`;
+}
+
+const FALLBACK_TESTIMONIALS: Testimonial[] = [
   {
     kicker: "SUNNYBANK · SOLD",
     title: "SARAH M.",
@@ -179,7 +188,31 @@ function TestiCard({
   );
 }
 
-export default function VideoTestimonial() {
+export default function VideoTestimonial({
+  cms,
+}: {
+  cms?: VideoTestimonialSectionData | null;
+}) {
+  const c = cms ?? null;
+
+  // Derive card data — CMS wins, fallback to hardcoded
+  const testimonials: Testimonial[] =
+    c?.selected_testimonials?.length
+      ? c.selected_testimonials.map((t) => ({
+          kicker:   t.kicker,
+          title:    t.title,
+          video:    resolveUrl(t.video_url) || `${base}vids/rgp-video.mp4`,
+          poster:   resolveUrl(t.poster?.url),
+          tintVar:  t.tint_var,
+        }))
+      : FALLBACK_TESTIMONIALS;
+
+  const label     = c?.label     ?? "Testimonials";
+  const headline  = c?.headline  ?? "What Our Clients Say";
+  const highlight = c?.headline_highlight ?? "Clients";
+  const ctaLabel  = c?.cta_label ?? "Read All Reviews";
+  const ctaUrl    = c?.cta_url   ?? "/testimonials";
+
   const [activeId, setActiveId] = useState<string | null>(null);
   const swiperRef = useRef<SwiperType | null>(null);
   const sliderOuterRef = useRef<HTMLDivElement>(null);
@@ -225,14 +258,16 @@ export default function VideoTestimonial() {
       <div className="rg-philo__wrap">
         <header className="rg-philo__head">
           <p data-gsap="fade-up" className="rg-philo__label">
-            Testimonials
+            {label}
           </p>
           <h2
             data-gsap="char-reveal"
             data-gsap-start="top 85%"
             className="rg-philo__title"
           >
-            What Our <em>Clients</em> Say
+            {headline.replace(highlight, "").trimEnd() || "What Our"}{" "}
+            <em>{highlight}</em>
+            {headline.split(highlight)[1] ?? " Say"}
           </h2>
         </header>
 
@@ -261,7 +296,7 @@ export default function VideoTestimonial() {
             onReachBeginning={(swiper) => updateNavState(swiper)}
             onReachEnd={(swiper) => updateNavState(swiper)}
           >
-            {TESTIMONIALS.map((t) => (
+            {testimonials.map((t) => (
               <SwiperSlide key={t.title} className="rg-philo__slide">
                 <TestiCard
                   t={t}
@@ -303,11 +338,11 @@ export default function VideoTestimonial() {
         {/* CTA */}
         <div className="rg-philo__cta-row">
           <Link
-            to="/testimonials"
+            to={ctaUrl}
             className="rg-philo__cta-btn"
             data-gsap="btn-clip-reveal"
           >
-            <span>Read All Reviews</span>
+            <span>{ctaLabel}</span>
             <svg
               viewBox="0 0 24 24"
               fill="none"

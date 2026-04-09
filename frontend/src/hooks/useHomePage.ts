@@ -114,11 +114,30 @@ export interface ServiceSectionData {
   cta: ServiceCtaData;
 }
 
+export interface CmsVideoTestimonial {
+  id: number;
+  kicker: string;
+  title: string;
+  video_url: string;
+  poster: { url: string } | null;
+  tint_var: "gold" | "amber" | "crimson";
+}
+
+export interface VideoTestimonialSectionData {
+  label: string;
+  headline: string;
+  headline_highlight: string;
+  selected_testimonials: CmsVideoTestimonial[];
+  cta_label: string;
+  cta_url: string;
+}
+
 export interface HomePageData {
   hero: HeroData | null;
   intro: IntroData | null;
   listing_section: ListingSectionData | null;
   service_section: ServiceSectionData | null;
+  testimonial_section: VideoTestimonialSectionData | null;
   eoi_cta: EoiCtaData | null;
 }
 
@@ -131,12 +150,13 @@ export function resolveMediaUrl(url: string | undefined | null): string | undefi
 }
 
 function parseBody(items: { type: string; value: unknown }[]): HomePageData {
-  const data: HomePageData = { hero: null, intro: null, listing_section: null, service_section: null, eoi_cta: null };
+  const data: HomePageData = { hero: null, intro: null, listing_section: null, service_section: null, testimonial_section: null, eoi_cta: null };
   for (const block of items) {
     if (block.type === "hero") data.hero = block.value as HeroData;
     if (block.type === "intro") data.intro = block.value as IntroData;
     if (block.type === "listing_section") data.listing_section = block.value as ListingSectionData;
     if (block.type === "service_section") data.service_section = block.value as ServiceSectionData;
+    if (block.type === "testimonial_section") data.testimonial_section = block.value as VideoTestimonialSectionData;
     if (block.type === "eoi_cta") data.eoi_cta = block.value as EoiCtaData;
   }
   return data;

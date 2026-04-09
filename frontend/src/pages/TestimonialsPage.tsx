@@ -2,6 +2,7 @@ import React, { useEffect, useLayoutEffect, useRef } from "react";
 import HeroSection from "../sections/HeroSection";
 import RGPSplitSlider from "../components/reusable/SplitSlider";
 import { initGsapSwitchAnimations } from "@/lib/gsapSwitchAnimations";
+import { useTestimonials } from "@/hooks/useTestimonials";
 import gsap from "gsap";
 import "./TestimonialPage.css";
 
@@ -618,7 +619,9 @@ const MOSAIC_PICKS = [
   testimonials[26],
 ];
 
-const VoiceMosaic: React.FC = () => (
+const VoiceMosaic: React.FC<{ items: Testimonial[] }> = ({ items }) => {
+  const picks = items.filter((_, i) => i % 6 === 2).slice(0, 9);
+  return (
   <section className="tp-mosaic">
     <div className="tp-mosaic__header">
       <span
@@ -638,7 +641,7 @@ const VoiceMosaic: React.FC = () => (
     </div>
 
     <div className="tp-mosaic__grid">
-      {MOSAIC_PICKS.map((item, i) => (
+      {picks.map((item, i) => (
         <article
           key={item.id}
           className={`tp-mosaic__card tp-mosaic__card--${i + 1}`}
@@ -660,7 +663,8 @@ const VoiceMosaic: React.FC = () => (
       ))}
     </div>
   </section>
-);
+  );
+};
 
 /* ─────────────────────────────────────────────────────────────────────────────
    5. TICKER WALL — 3-column infinite auto-scroll
@@ -713,7 +717,12 @@ const TickerCol: React.FC<TickerColProps> = ({ items, speed, reversed }) => (
   </div>
 );
 
-const TickerWall: React.FC = () => (
+const TickerWall: React.FC<{ items: Testimonial[] }> = ({ items }) => {
+  const third = Math.ceil(items.length / 3);
+  const col1 = items.slice(0, third);
+  const col2 = items.slice(third, third * 2);
+  const col3 = items.slice(third * 2);
+  return (
   <section className="tp-ticker">
     <div className="tp-ticker__header">
       <span
@@ -734,15 +743,16 @@ const TickerWall: React.FC = () => (
 
     <div className="tp-ticker__container">
       <div className="tp-ticker__wall">
-        <TickerCol items={testimonials.slice(15, 24)} speed={32} />
-        <TickerCol items={testimonials.slice(24, 33)} speed={44} reversed />
-        <TickerCol items={testimonials.slice(33, 42)} speed={38} />
+        <TickerCol items={col1.length ? col1 : items.slice(15, 24)} speed={32} />
+        <TickerCol items={col2.length ? col2 : items.slice(24, 33)} speed={44} reversed />
+        <TickerCol items={col3.length ? col3 : items.slice(33, 42)} speed={38} />
       </div>
       <div className="tp-ticker__fade-top" />
       <div className="tp-ticker__fade-bottom" />
     </div>
   </section>
-);
+  );
+};
 
 /* ─────────────────────────────────────────────────────────────────────────────
    6. FINAL CTA
@@ -841,6 +851,16 @@ const FinalCTA: React.FC = () => (
 const TestimonialPage: React.FC<{ ready?: boolean }> = ({ ready = false }) => {
   const pageRef = useRef<HTMLDivElement>(null);
   const slabRef = useRef<HTMLDivElement>(null);
+  const cmsData = useTestimonials();
+
+  // CMS overrides — fall back to hardcoded if CMS returns nothing
+  const featuredSlides = cmsData?.featured?.length ? cmsData.featured : undefined;
+  const textItems: Testimonial[] = cmsData?.text?.length
+    ? cmsData.text.map((t) => ({
+        id: t.id, name: t.name, role: t.role, company: t.company,
+        avatar: t.avatar, content: t.content, rating: t.rating, location: t.location,
+      }))
+    : testimonials;
 
   useLayoutEffect(() => {
     if (!ready || !slabRef.current) return;
@@ -976,9 +996,9 @@ const TestimonialPage: React.FC<{ ready?: boolean }> = ({ ready = false }) => {
             </p>
           </header>
         </div>
-        <RGPSplitSlider />
-        <VoiceMosaic />
-        <TickerWall />
+        <RGPSplitSlider slides={featuredSlides} />
+        <VoiceMosaic items={textItems} />
+        <TickerWall items={textItems} />
 
         <FinalCTA />
       </main>
